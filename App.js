@@ -1,18 +1,64 @@
 import * as React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import 'react-native-gesture-handler';
 
-const instructions = Platform.select({
-  ios: `Press Cmd+R to reload,\nCmd+D or shake for dev menu`,
-  android: `Double tap R on your keyboard to reload,\nShake or press menu button for dev menu`,
-});
+import AddBookScreen from './screens/AddBookScreen';
+import BookScreen from './screens/BookScreen';
+import BookDetailScreen from './screens/BookDetailScreen';
+
+import {decode, encode} from 'base-64'
+
+if (!global.btoa) {
+    global.btoa = encode;
+}
+
+if (!global.atob) {
+    global.atob = decode;
+}
+
+
+const Stack = createStackNavigator();
+
+function MyStack() {
+  return (
+      <Stack.Navigator
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#621FF7',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+      >
+          <Stack.Screen
+              name="BookScreen"
+              component={BookScreen}
+              options={{ title: 'Lista książek' }}
+          />
+        <Stack.Screen
+            name="AddBookScreen"
+            component={AddBookScreen}
+            options={{ title: 'Dodaj Książkę' }}
+        />
+        <Stack.Screen
+            name="BookDetailScreen"
+            component={BookDetailScreen}
+            options={{ title: 'Szczegóły ksiązki' }}
+        />
+      </Stack.Navigator>
+  );
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome to React Native!</Text>
-      <Text style={styles.instructions}>To get started, edit App.js</Text>
-      <Text style={styles.instructions}>{instructions}</Text>
-    </View>
+          <NavigationContainer>
+              <MyStack />
+          </NavigationContainer>
+
   );
 }
 
