@@ -54,6 +54,10 @@ class BookScreen extends Component {
                     title="Grupy Książek"
                     onPress={() => this.props.navigation.navigate('GroupBookScreen')}
                 />
+                <Button
+                    title="Skanuj kod kreskowy"
+                    onPress={() => this.props.navigation.navigate('ScannerScreen')}
+                />
                 {
                     this.state.bookArr.map((item, i) => {
                         return (
