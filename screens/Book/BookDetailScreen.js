@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Alert, Button, StyleSheet, TextInput, ScrollView, ActivityIndicator, View } from 'react-native';
 import firebase from '../../database/firebaseDb';
+import RNPickerSelect from "react-native-picker-select";
 
 class BookDetailScreen extends Component {
+    groupBookArr = [];
     constructor() {
         super();
         this.state = {
@@ -21,7 +23,8 @@ class BookDetailScreen extends Component {
     }
 
     componentDidMount() {
-        const dbRef = firebase.firestore().collection('book').doc(this.props.route.params.bookKey)
+        const dbRef = firebase.firestore().collection('book').doc(this.props.route.params.bookKey);
+        const dbGroupBookRef = firebase.firestore().collection('/groupBook');
         dbRef.get().then((res) => {
             if (res.exists) {
                 const book = res.data();
@@ -37,12 +40,27 @@ class BookDetailScreen extends Component {
                     wydawnictwo: book.wydawnictwo,
                     status: book.status,
                     grupaKsiazekID: book.grupaKsiazekID,
-                    isLoading: false
+                    isLoading: true
                 });
             } else {
                 console.log("Document does not exist!");
             }
         });
+        this.unsubscribe = dbGroupBookRef.onSnapshot(this.getCollection);
+    }
+    getCollection = (querySnapshot) => {
+        querySnapshot.forEach((res) => {
+
+            const val = res.data();
+            this.groupBookArr.push(val);
+        });
+        this.setState({
+            groupBookArr: this.groupBookArr,
+            isLoading: false,
+        });
+    };
+    componentWillUnmount(){
+        this.unsubscribe();
     }
     inputValueUpdate = (val, prop) => {
         const state = this.state;
@@ -187,10 +205,12 @@ class BookDetailScreen extends Component {
                     />
                 </View>
                 <View style={styles.inputGroup}>
-                    <TextInput
-                        placeholder={'Grupa książek'}
+                    <RNPickerSelect
                         value={this.state.grupaKsiazekID}
-                        onChangeText={(val) => this.inputValueUpdate(val, 'grupaKsiazekID')}
+                        placeholder={{label: 'Wybierz grupę', value: null}}
+                        onValueChange={(value) => this.inputValueUpdate(value, 'grupaKsiazekID')}
+                        items={this.groupBookArr.map(val => {return {label: val.groupName, value: val.groupName}})
+                        }
                     />
                 </View>
                 <View style={styles.button}>
