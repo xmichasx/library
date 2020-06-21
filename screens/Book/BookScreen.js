@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, ScrollView, ActivityIndicator, View } from 'react-native';
 import {Button, ListItem} from 'react-native-elements'
-import firebase from '../database/firebaseDb';
+import firebase from '../../database/firebaseDb';
 
 class BookScreen extends Component {
     constructor() {
@@ -50,6 +50,10 @@ class BookScreen extends Component {
                     title="Dodaj Książkę"
                     onPress={() => this.props.navigation.navigate('AddBookScreen')}
                 />
+                <Button
+                    title="Grupy Książek"
+                    onPress={() => this.props.navigation.navigate('GroupBookScreen')}
+                />
                 {
                     this.state.bookArr.map((item, i) => {
                         return (
@@ -60,7 +64,7 @@ class BookScreen extends Component {
                                 title={item.val.tytul}
                                 onPress={() => {
                                     this.props.navigation.navigate('BookDetailScreen', {
-                                        bookkey: item.key
+                                        bookKey: item.key
                                     });
                                 }}/>
                         );

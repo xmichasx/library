@@ -4,11 +4,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 
-import AddBookScreen from './screens/AddBookScreen';
-import BookScreen from './screens/BookScreen';
-import BookDetailScreen from './screens/BookDetailScreen';
+import AddBookScreen from './screens/Book/AddBookScreen';
+import BookScreen from './screens/Book/BookScreen';
+import BookDetailScreen from './screens/Book/BookDetailScreen';
+import GroupBookScreen from './screens/groupBook/GroupBookScreen';
 
 import {decode, encode} from 'base-64'
+import GroupBookDetailScreen from "./screens/groupBook/GroupBookDetailScreen";
+import AddGroupBookScreen from "./screens/groupBook/AddGroupBookScreen";
 
 if (!global.btoa) {
     global.btoa = encode;
@@ -37,7 +40,7 @@ function MyStack() {
           <Stack.Screen
               name="BookScreen"
               component={BookScreen}
-              options={{ title: 'Lista książek' }}
+              options={{ title: 'Lista Książek' }}
           />
         <Stack.Screen
             name="AddBookScreen"
@@ -49,6 +52,21 @@ function MyStack() {
             component={BookDetailScreen}
             options={{ title: 'Szczegóły ksiązki' }}
         />
+          <Stack.Screen
+              name="GroupBookScreen"
+              component={GroupBookScreen}
+              options={{ title: 'Grupy książek' }}
+          />
+          <Stack.Screen
+              name="GroupBookDetailScreen"
+              component={GroupBookDetailScreen}
+              options={{ title: 'Szczegóły książki' }}
+          />
+          <Stack.Screen
+              name="AddGroupBookScreen"
+              component={AddGroupBookScreen}
+              options={{ title: 'Dodaj grupę' }}
+          />
       </Stack.Navigator>
   );
 }

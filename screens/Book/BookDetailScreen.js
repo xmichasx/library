@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, TextInput, ScrollView, ActivityIndicator, View } from 'react-native';
-import firebase from '../database/firebaseDb';
+import { Alert, Button, StyleSheet, TextInput, ScrollView, ActivityIndicator, View } from 'react-native';
+import firebase from '../../database/firebaseDb';
 
-class AddBookScreen extends Component {
+class BookDetailScreen extends Component {
     constructor() {
         super();
-        this.dbRef = firebase.firestore().collection('/book');
-        this.state =
-        {
+        this.state = {
             id: '',
             tytul: '',
             data_wydania: '',
@@ -18,57 +16,102 @@ class AddBookScreen extends Component {
             wydawnictwo: '',
             status: '',
             grupaKsiazekID: '',
-            isLoading: false
+            isLoading: true
         };
+    }
+
+    componentDidMount() {
+        const dbRef = firebase.firestore().collection('book').doc(this.props.route.params.bookKey)
+        dbRef.get().then((res) => {
+            if (res.exists) {
+                const book = res.data();
+                this.setState({
+                    key: res.id,
+                    id: book.id,
+                    tytul: book.tytul,
+                    data_wydania: book.data_wydania,
+                    autor: book.autor,
+                    ISBN: book.ISBN,
+                    kod_kreskowy: book.kod_kreskowy,
+                    zdjecieUrl: book.zdjecieUrl,
+                    wydawnictwo: book.wydawnictwo,
+                    status: book.status,
+                    grupaKsiazekID: book.grupaKsiazekID,
+                    isLoading: false
+                });
+            } else {
+                console.log("Document does not exist!");
+            }
+        });
     }
     inputValueUpdate = (val, prop) => {
         const state = this.state;
         state[prop] = val;
         this.setState(state);
     };
-    storeBook() {
-        if(this.state.name === ''){
-            alert('Fill at least your name!')
-        } else {
+
+    updateBook() {
+        this.setState({
+            isLoading: true,
+        });
+        const updateDBRef = firebase.firestore().collection('book').doc(this.state.key);
+        updateDBRef.set({
+            id: this.state.id,
+            tytul: this.state.tytul,
+            data_wydania: this.state.data_wydania,
+            autor: this.state.autor,
+            ISBN: this.state.ISBN,
+            kod_kreskowy: this.state.kod_kreskowy,
+            zdjecieUrl: this.state.zdjecieUrl,
+            wydawnictwo: this.state.wydawnictwo,
+            status: this.state.status,
+            grupaKsiazekID: this.state.grupaKsiazekID,
+        }).then((docRef) => {
             this.setState({
-                isLoading: true,
+                key: '',
+                id: '',
+                tytul: '',
+                data_wydania: '',
+                autor: '',
+                ISBN: '',
+                kod_kreskowy: '',
+                zdjecieUrl: '',
+                wydawnictwo: '',
+                status: '',
+                grupaKsiazekID: '',
+                isLoading: false,
             });
-            this.dbRef.add({
-                id: this.state.id,
-                tytul: this.state.tytul,
-                data_wydania: this.state.data_wydania,
-                autor: this.state.autor,
-                ISBN: this.state.ISBN,
-                kod_kreskowy: this.state.kod_kreskowy,
-                zdjecieUrl: this.state.zdjecieUrl,
-                wydawnictwo: this.state.wydawnictwo,
-                status: this.state.status,
-                grupaKsiazekID: this.state.grupaKsiazekID,
-            }).then((res) => {
+            this.props.navigation.navigate('BookScreen');
+        })
+            .catch((error) => {
+                console.error("Error: ", error);
                 this.setState({
-                    id: '',
-                    tytul: '',
-                    data_wydania: '',
-                    autor: '',
-                    ISBN: '',
-                    kod_kreskowy: '',
-                    zdjecieUrl: '',
-                    wydawnictwo: '',
-                    status: '',
-                    grupaKsiazekID: '',
                     isLoading: false,
                 });
-                this.props.navigation.navigate('BookScreen')
-            })
-                .catch((err) => {
-                    console.error("Error found: ", err);
-                    this.setState({
-                        isLoading: false,
-                    });
-                    throw err;
-                });
-        }
+            });
     }
+
+    deleteBook() {
+        const dbRef = firebase.firestore().collection('book').doc(this.props.route.params.bookKey);
+        dbRef.delete().then((res) => {
+            console.log('Item removed from database');
+            this.props.navigation.navigate('BookScreen');
+        })
+    }
+
+    openTwoButtonAlert=()=>{
+        Alert.alert(
+            'Usuwanie książki',
+            'Jeteś pewny usunięcia książki?',
+            [
+                {text: 'Tak', onPress: () => this.deleteBook()},
+                {text: 'Nie', onPress: () => console.log('No item was removed'), style: 'cancel'},
+            ],
+            {
+                cancelable: true
+            }
+        );
+    };
 
     render() {
         if(this.state.isLoading){
@@ -83,78 +126,85 @@ class AddBookScreen extends Component {
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Id'}
-                        value={this.state.name}
+                        value={this.state.id}
                         onChangeText={(val) => this.inputValueUpdate(val, 'id')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Tytul'}
-                        value={this.state.name}
+                        value={this.state.tytul}
                         onChangeText={(val) => this.inputValueUpdate(val, 'tytul')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Data Wydania'}
-                        value={this.state.name}
+                        value={this.state.data_wydania}
                         onChangeText={(val) => this.inputValueUpdate(val, 'data_wydania')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Autor'}
-                        value={this.state.name}
+                        value={this.state.autor}
                         onChangeText={(val) => this.inputValueUpdate(val, 'autor')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'ISBN'}
-                        value={this.state.name}
+                        value={this.state.ISBN}
                         onChangeText={(val) => this.inputValueUpdate(val, 'ISBN')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Kod kreskowy'}
-                        value={this.state.name}
+                        value={this.state.kod_kreskowy}
                         onChangeText={(val) => this.inputValueUpdate(val, 'kod_kreskowy')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Zdjęcie Url'}
-                        value={this.state.name}
+                        value={this.state.zdjecieUrl}
                         onChangeText={(val) => this.inputValueUpdate(val, 'zdjecieUrl')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Wydawnictwo'}
-                        value={this.state.name}
+                        value={this.state.wydawnictwo}
                         onChangeText={(val) => this.inputValueUpdate(val, 'wydawnictwo')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Status'}
-                        value={this.state.name}
+                        value={this.state.status}
                         onChangeText={(val) => this.inputValueUpdate(val, 'status')}
                     />
                 </View>
                 <View style={styles.inputGroup}>
                     <TextInput
                         placeholder={'Grupa książek'}
-                        value={this.state.name}
+                        value={this.state.grupaKsiazekID}
                         onChangeText={(val) => this.inputValueUpdate(val, 'grupaKsiazekID')}
                     />
                 </View>
                 <View style={styles.button}>
                     <Button
-                        title='Dodaj książkę '
-                        onPress={() => this.storeBook()}
+                        title='Zapisz'
+                        onPress={() => this.updateBook()}
                         color="#19AC52"
+                    />
+                </View>
+                <View>
+                    <Button
+                        title='Usuń'
+                        onPress={this.openTwoButtonAlert}
+                        color="#E37399"
                     />
                 </View>
             </ScrollView>
@@ -182,8 +232,11 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    button: {
+        marginBottom: 7,
     }
-})
+});
 
 
-export default AddBookScreen;
+export default BookDetailScreen;
