@@ -198,10 +198,16 @@ class BookDetailScreen extends Component {
                     />
                 </View>
                 <View style={styles.inputGroup}>
-                    <TextInput
-                        placeholder={'Status'}
+                    <RNPickerSelect
                         value={this.state.status}
-                        onChangeText={(val) => this.inputValueUpdate(val, 'status')}
+                        placeholder={{label: 'Wybierz status', value: null}}
+                        onValueChange={(value) => this.inputValueUpdate(value, 'status')}
+                        items={[
+                            {label:'posiadana', value:'posiadana'},
+                            {label:'pożyczona od kogoś', value:'pożyczona od kogoś'},
+                            {label:'pożyczona komuś', value:'pożyczona komuś'},
+                            {label:'planowana do kupienia', value:'planowana do kupienia'}
+                        ]}
                     />
                 </View>
                 <View style={styles.inputGroup}>

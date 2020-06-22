@@ -157,10 +157,15 @@ class AddBookScreen extends Component {
                     />
                 </View>
                 <View style={styles.inputGroup}>
-                    <TextInput
-                        placeholder={'Status'}
-                        value={this.state.name}
-                        onChangeText={(val) => this.inputValueUpdate(val, 'status')}
+                    <RNPickerSelect
+                        placeholder={{label: 'Wybierz status', value: null}}
+                        onValueChange={(value) => this.inputValueUpdate(value, 'status')}
+                        items={[
+                            {label:'posiadana', value:'posiadana'},
+                            {label:'pożyczona od kogoś', value:'pożyczona od kogoś'},
+                            {label:'pożyczona komuś', value:'pożyczona komuś'},
+                            {label:'planowana do kupienia', value:'planowana do kupienia'}
+                        ]}
                     />
                 </View>
                 <View style={styles.inputGroup}>
